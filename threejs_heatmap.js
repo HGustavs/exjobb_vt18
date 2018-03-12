@@ -1,7 +1,7 @@
 var scene = new THREE.Scene();
 
-var width = 500000;
-var height = 500000;
+var width = 150;
+var height = 150;
 var near = 0;
 var far = 5;
 var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, near, far );
@@ -10,8 +10,10 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
+// Variables for timing the rendering
 var start;
 var stop;
+var result;
 
 // Timer. Calculate the rendering time
 function timer(time) {
@@ -19,41 +21,58 @@ function timer(time) {
         start = Date.now();
     } else if (time == stop) {
         stop = Date.now();
-        var result = stop - start;
+        result = stop - start;
         console.log(result);
     } else {
         console.log("Timer was not set correctly");
     }
 }
 
-timer(start); // Start animation render timer
+// Get the data from the json file
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var jsonData = JSON.parse(this.responseText);
+       
+        var newLat;
+        var newLong;
+        var dotQuantity = 0;
 
-// Creating a dot
-var dotGeometry = new THREE.Geometry();
-dotGeometry.vertices.push(new THREE.Vector3( 0, 0, 0));
-var dotMaterial = new THREE.PointsMaterial( { size: 2, sizeAttenuation: false } );
-function createDot() {
-    var dot = new THREE.Points( dotGeometry, dotMaterial );
-    
-    dot.position.x = Math.floor(Math.random()*500000) - 250000;
-    dot.position.y = Math.floor(Math.random()*500000) - 250000;
-    
-    scene.add( dot );
-}
+        // Creating a dot
+        var dotGeometry = new THREE.Geometry();
+        dotGeometry.vertices.push(new THREE.Vector3( 0, 0, 0));
+        var dotMaterial = new THREE.PointsMaterial( { size: 2, sizeAttenuation: false } );
+        function createDot() {
+            var dot = new THREE.Points( dotGeometry, dotMaterial );
 
-var numberOfDots = 0;
+            newCoordinates();
+            dot.position.x = newLat;
+            dot.position.y = newLong;
+            scene.add( dot );
+        };
 
-var animate = function () {
-    requestAnimationFrame( animate );
-    
-    while (numberOfDots < 10000) {
-        createDot();
-        numberOfDots ++;
-    };
+        function newCoordinates(){
+            var latCoordinate = jsonData[dotQuantity]["Provets latitud (DD)"];
+            var longCoordinate = jsonData[dotQuantity]["Provets longitud (DD)"];
+            newLat = latCoordinate.replace(",","."); // Replace any commas with a dot to be able to render the coordinate
+            newLong = longCoordinate.replace(",",".");
+        };
 
-    renderer.render(scene, camera);
+        var animate = function () {
+            requestAnimationFrame( animate );
+            for(dotQuantity; dotQuantity < jsonData.length; dotQuantity++){
+                createDot();
+            };
+            renderer.render(scene, camera);
+        };
+
+        console.log(jsonData.length)
+        timer(start); // Start animation render timer
+        animate();
+        timer(stop); // Stop and calculate the animation render time
+    }
 };
+xmlhttp.open("GET", "5000rows.json", true);
+xmlhttp.send();
 
-animate();
 
-timer(stop); // Stop and calculate the animation render time
