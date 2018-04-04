@@ -1,20 +1,21 @@
 <html> 
     <head> 
         <title>X3DOM</title> 			
-        <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script> 
+        <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'></script>
+        <script type='text/javascript' src='x3dom.js'></script> 
         <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'></link> 
     </head> 
-    <body> 
+    <body onload='setCoordinate()'> 
         <x3d width='600px' height='400px'> 
             <scene> 
-                <viewpoint DEF='v1' description='View 1' orientation='0 1 0 1.5' position='10 0 0' fieldOfView='1'></viewpoint>
+                <OrthoViewpoint DEF='v1' orientation='0 0 0 1' position='0 0 10' fieldOfView='0 0 5 5'></OrthoViewpoint>
                 <shape> 
                     <appearance>
                         <material DEF='materialID'></material>
                     </appearance>
                     <!-- Creates a simpel triangle -->
-                    <indexedFaceSet solid='false' coordIndex='0 1 2 -1 '>
-                        <coordinate point='0 0 0 0 0 1 0 1 0.5'/>
+                    <indexedFaceSet id='indexdFaceSetID' solid='false' coordIndex='0 1 2 -1'>
+                        <coordinate id='coordinateID' point='0 0 1, 2 0 1, 1 2 1'/>
                     </indexFaceSet>
                 </shape> 
             </scene> 
