@@ -13,7 +13,7 @@ document.body.appendChild( renderer.domElement );
 // Variables for timing the rendering
 var start;
 var stop;
-var result;
+var result; // The difference between start and stop
 
 // Timer. Calculate the rendering time
 function timer(time) {
@@ -41,7 +41,7 @@ xmlhttp.onreadystatechange = function() {
         // Creating a dot
         var dotGeometry = new THREE.Geometry();
         dotGeometry.vertices.push(new THREE.Vector3( 0, 0, 0));
-        var dotMaterial = new THREE.PointsMaterial( { size: 2, sizeAttenuation: false } );
+        var dotMaterial = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false } );
         function createDot() {
             var dot = new THREE.Points( dotGeometry, dotMaterial );
 
@@ -72,5 +72,5 @@ xmlhttp.onreadystatechange = function() {
         timer(stop); // Stop and calculate the animation render time
     };
 };
-xmlhttp.open("GET", "5000rows.json", true);
+xmlhttp.open("GET", "../Dataset/testData.json", true);
 xmlhttp.send();
