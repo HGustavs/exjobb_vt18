@@ -8,14 +8,14 @@
     <body onload='setCoordinate()'> 
         <x3d width='600px' height='400px'> 
             <scene> 
-                <OrthoViewpoint DEF='v1' orientation='0 0 0 1' position='0 0 10' fieldOfView='0 0 5 5'></OrthoViewpoint>
+                <OrthoViewpoint DEF='v1' orientation='0 0 0 1' position='0 0 2' fieldOfView='0 0 0 50'></OrthoViewpoint>
                 <shape> 
                     <appearance>
                         <material DEF='materialID'></material>
                     </appearance>
-                    <!-- Creates a simpel triangle -->
-                    <indexedFaceSet id='indexdFaceSetID' solid='false' coordIndex='0 1 2 -1'>
-                        <coordinate id='coordinateID' point='0 0 1, 2 0 1, 1 2 1'/>
+                    <!-- Defines where to render the heatmap -->
+                    <indexedFaceSet id='indexdFaceSetID' solid='false' coordIndex='0 1 2 -1 3 4 5 -1 '>
+                        <coordinate id='coordinateID' point='0 0 0, 2 0 0, 1 2 0, 3 0 0, 5 0 0, 4 2 0'/>
                     </indexFaceSet>
                 </shape> 
             </scene> 
