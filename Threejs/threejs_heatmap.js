@@ -14,7 +14,7 @@ document.body.appendChild(renderer.domElement);
 // Variables for timing the rendering
 var start;
 var stop;
-var result; // The difference between start and stop
+var result; // The time difference between start and stop
 
 // Timer. Calculate the rendering time
 function timer(time) {
@@ -35,11 +35,12 @@ xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var jsonData = JSON.parse(this.responseText);
         
-        // Objects to hold coordinates
+        // Objects to hold coordinates and relevant values
         var coordinates = {}; 
+        var values = {};
 
         // When finished is true, render() is run
-        var finished = false;
+        var startRender = true;
         var dotQuantity = 0;
 
         // Source coordinates will be in Longitude/Latitude, WGS84
@@ -49,17 +50,12 @@ xmlhttp.onreadystatechange = function() {
         var dest = new proj4('EPSG:3785');
 
         function prepareCoordinates() {
-            var coords = newCoordinate();
-            var point = convertLatlon(coords.lat, coords.lon);
-
-            addID(point);
+            for(dotQuantity; dotQuantity < jsonData.length; dotQuantity++){
+                var coords = newCoordinate();
+                var point = convertLatlon(coords.lat, coords.lon);
+                addID(point);
+            }
         };
-
-        // Returns a point with x and y coordinates in meters
-        function convertLatlon(lat, lon) {
-            var point = proj4.toPoint([lon, lat, 0.0]);
-            return proj4.transform(source.oProj, dest.oProj, point); 
-        }
 
         function newCoordinate(){
             // Replace any commas with a dot to be able to render the coordinate
@@ -68,6 +64,12 @@ xmlhttp.onreadystatechange = function() {
             return {lat: lat, lon: lon};
         };
         
+        // Returns a point with x and y coordinates in meters
+        function convertLatlon(lat, lon) {
+            var point = proj4.toPoint([lon, lat, 0.0]);
+            return proj4.transform(source.oProj, dest.oProj, point); 
+        }
+
         function addID(point) { // Adds the coordinates and a value to an array
             var id = ((point.x + point.y) % jsonData.length) + "";
             var radius = 0;
@@ -81,49 +83,76 @@ xmlhttp.onreadystatechange = function() {
 
             // If coordinates has property of id, increase radius
             if(coordinates[id]) {
-                coordinates[id].radius += 1;
+                coordinates[id].radius += 0.03;
             } else {
                 // Create new coordinate
-                coordinates[id] = {radius : 1, x : movedX, y : movedY};
+                coordinates[id] = {radius : 0.03, x : movedX, y : movedY};
             }
         };
 
-        // Creating a dot
-        var dotGeometry = new THREE.Geometry();
-        dotGeometry.vertices.push(new THREE.Vector3( 0, 0, 0));
-        var dotMaterial = new THREE.PointsMaterial( { size: 2, sizeAttenuation: false } );
-        function createDot() {
+        function render(){
             for(var id in coordinates) {
-                var dot = new THREE.Points(dotGeometry, dotMaterial);
-                
-                // Retrieve the x and y coordinate
-                var x = coordinates[id].x;
-                var y = coordinates[id].y;
+                var radius = coordinates[id].radius;
 
-                dot.position.x = x;
-                dot.position.y = y;
-                scene.add(dot);
+                // Retrieve the x and y coordinate
+                var xpoint = coordinates[id].x;
+                var ypoint = coordinates[id].y;
+
+                // If x are within the radius, run loop
+                for(var x = xpoint - radius; x < xpoint + radius; x++) {
+                    for(var y = ypoint - radius; y < ypoint + radius; y++) {
+                        var distance = Math.sqrt(Math.pow((x - xpoint), 2) + Math.pow((y - ypoint), 2));
+                        if(distance > radius) {
+                            continue;
+                        } else {
+                            var value = radius - 1 * distance;
+                            // Set an ID for the coordinate
+                            var id = ((x + y) % jsonData.length) + "";
+                            // If coordinates has property of id, add value
+                            if(values[id]) {
+                                values[id].value += value;
+                            } else {
+                                // Creates a new value
+                                values[id] = {value : value, x : x, y : y};
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        function createCircle() {
+            for(var id in values) {
+                var newValue = values[id].value * 0.1;
+                var geometry = new THREE.CircleGeometry(newValue, 32);
+                var material = new THREE.MeshBasicMaterial({color: 0xdd3333, transparent: true, opacity: 0.2});
+                var circle = new THREE.Mesh(geometry, material);
+
+                // Retrieve the x and y coordinate and set circle position
+                circle.position.x = values[id].x;
+                circle.position.y = values[id].y;
+                scene.add(circle);
             }
         };
         
         var animate = function () {
             requestAnimationFrame(animate);
-            for(dotQuantity; dotQuantity < jsonData.length; dotQuantity++){
+
+            if(startRender == true) {
                 prepareCoordinates();
-            };
-            
-            if(finished == false) {
-                createDot();
-                finished = true;
+                render();
+                
+                timer(start); // Start animation render timer
+                createCircle();
+                timer(stop); // Stop and calculate the animation render time
+                startRender = false;
             }
 
             renderer.render(scene, camera);
         };
 
         console.log(jsonData.length)
-        timer(start); // Start animation render timer
         animate();
-        timer(stop); // Stop and calculate the animation render time
     };
 };
 xmlhttp.open("GET", "../Dataset/testData.json", true);
