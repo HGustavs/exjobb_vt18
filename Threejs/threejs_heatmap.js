@@ -157,10 +157,14 @@ xmlhttp.onreadystatechange = function() {
             renderer.render(scene, camera);
         };
 
-        console.log(jsonData.length)
+        console.log("DataLength: " + jsonData.length)
         animate();
-        location.reload();
+        console.log(localStorage.getItem("time").length);
+        if(localStorage.getItem("time").length < 1000){
+            location.reload();
+        }
+        
     };
 };
-xmlhttp.open("GET", "../Dataset/testData.json", true);
+xmlhttp.open("GET", "../Dataset/5000rows.json", true);
 xmlhttp.send();
