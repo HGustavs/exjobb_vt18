@@ -160,11 +160,12 @@ xmlhttp.onreadystatechange = function() {
         console.log("DataLength: " + jsonData.length)
         animate();
         console.log(localStorage.getItem("time").length);
-        if(localStorage.getItem("time").length < 1000){
+        // Sets a limit on how much data should be collected
+        if(localStorage.getItem("time").length < 3000){
             location.reload();
         }
         
     };
 };
-xmlhttp.open("GET", "../Dataset/5000rows.json", true);
+xmlhttp.open("GET", "../Dataset/15000rows.json", true);
 xmlhttp.send();
