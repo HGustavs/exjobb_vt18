@@ -23,7 +23,13 @@ function timer(time) {
     } else if (time == stop) {
         stop = Date.now();
         result = stop - start;
-        console.log(result);
+
+        // Save rendering times
+        var renderTimes = [];
+        var getTimes = localStorage.getItem("time");
+        renderTimes.push(getTimes, result);
+        localStorage.setItem("time", renderTimes);
+        console.log(renderTimes);
     } else {
         console.log("Timer was not set correctly");
     }
@@ -52,7 +58,7 @@ xmlhttp.onreadystatechange = function() {
         function prepareCoordinates() {
             for(dotQuantity; dotQuantity < jsonData.length; dotQuantity++){
                 var coords = newCoordinate();
-                var point = convertLatlon(coords.lat, coords.lon);
+                var point = convertLatLon(coords.lat, coords.lon);
                 addID(point);
             }
         };
@@ -65,7 +71,7 @@ xmlhttp.onreadystatechange = function() {
         };
         
         // Returns a point with x and y coordinates in meters
-        function convertLatlon(lat, lon) {
+        function convertLatLon(lat, lon) {
             var point = proj4.toPoint([lon, lat, 0.0]);
             return proj4.transform(source.oProj, dest.oProj, point); 
         }
@@ -123,8 +129,8 @@ xmlhttp.onreadystatechange = function() {
 
         function createCircle() {
             for(var id in values) {
-                var newValue = values[id].value * 0.1;
-                var geometry = new THREE.CircleGeometry(newValue, 32);
+                var radius = values[id].value * 0.1;
+                var geometry = new THREE.CircleGeometry(radius, 32);
                 var material = new THREE.MeshBasicMaterial({color: 0xdd3333, transparent: true, opacity: 0.2});
                 var circle = new THREE.Mesh(geometry, material);
 
@@ -153,6 +159,7 @@ xmlhttp.onreadystatechange = function() {
 
         console.log(jsonData.length)
         animate();
+        location.reload();
     };
 };
 xmlhttp.open("GET", "../Dataset/testData.json", true);
