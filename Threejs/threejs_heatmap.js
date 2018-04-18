@@ -1,14 +1,14 @@
 'use strict';
 var scene = new THREE.Scene();
 
-var width = 100;
-var height = 100;
+var width = 50;
+var height = 50;
 var near = 0;
 var far = 5;
 var camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, near, far);
 
 var renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(600, 600);
 document.body.appendChild(renderer.domElement); 
 
 // Variables for timing the rendering
@@ -25,11 +25,15 @@ function timer(time) {
         result = stop - start;
 
         // Save rendering times
-        var renderTimes = [];
-        var getTimes = localStorage.getItem("time");
-        renderTimes.push(getTimes, result);
-        localStorage.setItem("time", renderTimes);
-        console.log(renderTimes);
+        var renderedTimes = [];
+        var getTimes;
+        if(Array.isArray(JSON.parse(localStorage.getItem("time")))) {
+            getTimes = JSON.parse(localStorage.getItem("time"));
+            renderedTimes = renderedTimes.concat(getTimes);
+        }
+        renderedTimes.push(result);
+        localStorage.setItem("time", JSON.stringify(renderedTimes));
+        console.log(JSON.parse(localStorage.getItem("time")));
     } else {
         console.log("Timer was not set correctly");
     }
@@ -45,8 +49,6 @@ xmlhttp.onreadystatechange = function() {
         var coordinates = {}; 
         var values = {};
 
-        // When finished is true, render() is run
-        var startRender = true;
         var dotQuantity = 0;
 
         // Source coordinates will be in Longitude/Latitude, WGS84
@@ -142,30 +144,31 @@ xmlhttp.onreadystatechange = function() {
         };
         
         var animate = function () {
-            requestAnimationFrame(animate);
-
-            if(startRender == true) {
                 prepareCoordinates();
                 render();
-                
-                timer(start); // Start animation render timer
                 createCircle();
-                timer(stop); // Stop and calculate the animation render time
-                startRender = false;
-            }
 
+            timer(start); // Start animation render timer
             renderer.render(scene, camera);
+            timer(stop); // Stop and calculate the animation render time
         };
 
         console.log("DataLength: " + jsonData.length)
-        animate();
-        console.log(localStorage.getItem("time").length);
+
         // Sets a limit on how much data should be collected
-        if(localStorage.getItem("time").length < 3000){
+        if(localStorage.getItem("time") != null){
+            if(JSON.parse(localStorage.getItem("time")).length < 10) {
+                animate();
+                location.reload();
+            } else {
+                console.log(JSON.parse(localStorage.getItem("time")));
+            }
+        } else {
+            animate();
             location.reload();
         }
         
     };
 };
-xmlhttp.open("GET", "../Dataset/15000rows.json", true);
+xmlhttp.open("GET", "../Dataset/5000rows.json", true);
 xmlhttp.send();
