@@ -61,6 +61,7 @@ xmlhttp.onreadystatechange = function() {
             for(dotQuantity; dotQuantity < jsonData.length; dotQuantity++){
                 var coords = newCoordinate();
                 var point = convertLatLon(coords.lat, coords.lon);
+                point.sal = coords.sal;
                 addID(point);
             }
         };
@@ -69,7 +70,12 @@ xmlhttp.onreadystatechange = function() {
             // Replace any commas with a dot to be able to render the coordinate
             var lat = jsonData[dotQuantity]["Provets latitud (DD)"].replace(",",".");
             var lon = jsonData[dotQuantity]["Provets longitud (DD)"].replace(",",".");
-            return {lat: lat, lon: lon};
+            var salinity = jsonData[dotQuantity]["M�tv�rde"];
+               // Makes salinity to a number if it is a string
+               if(typeof salinity == "string"){
+                   salinity = Number(jsonData[dotQuantity]["M�tv�rde"].replace(",","."));
+               }
+               return {lat: lat, lon: lon, sal: salinity};
         };
         
         // Returns a point with x and y coordinates in meters
@@ -80,7 +86,7 @@ xmlhttp.onreadystatechange = function() {
 
         function addID(point) { // Adds the coordinates and a value to an array
             var id = ((point.x + point.y) % jsonData.length) + "";
-            var radius = 0;
+            var radius = point.sal/10;
             // x and y coordinates in 100km instead of meters
             var x = point.x / 100000;
             var y = point.y / 100000;
@@ -90,12 +96,12 @@ xmlhttp.onreadystatechange = function() {
             var movedY = y - 85;
 
             // If coordinates has property of id, increase radius
-            if(coordinates[id]) {
-                coordinates[id].radius += 0.03;
-            } else {
-                // Create new coordinate
-                coordinates[id] = {radius : 0.03, x : movedX, y : movedY};
-            }
+            // if(coordinates[id]) {
+            //     coordinates[id].radius += radius;
+            // } else {
+            //     // Create new coordinate
+                coordinates[id] = {radius : radius, x : movedX, y : movedY};
+            // }
         };
 
         function render(){
@@ -129,12 +135,46 @@ xmlhttp.onreadystatechange = function() {
             }
         };
 
+        function value2rgba(value) {
+            // define rgb variables
+            var r, g, b;
+            var h = 1 - value;
+            var l = 1 - value * 0.55;
+            // convert hue to rgb
+            function hue2rgb(p, q, t) {
+                if(t < 0) t++;
+                if(t > 1) t--;
+                if(t < 1 / 6) return p + (q - p) * 6 * t;
+                if(t < 1 / 2) return q;
+                if(t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                return p;
+                }
+            // ternary operator
+            var q = l < 0.5 ? l * 2 : l + 1 - l;
+            var p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1 / 3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1 / 3);
+            // return RGBA
+            return [r, g, b, value];
+        }
+
         function createCircle() {
+            // Loop through all values and return the number with the highest value
+            var max = 0;
+            for(var i in values) {
+                max = Math.max(values[i].value, max);
+            }
+            // Loop through all values and apply RGBA colors
             for(var id in values) {
+                // Convert the value to rgba colors
+                var rgba = value2rgba(values[id].value / max);
                 var radius = values[id].value * 0.1;
                 var geometry = new THREE.CircleGeometry(radius, 32);
-                var material = new THREE.MeshBasicMaterial({color: 0xdd3333, transparent: true, opacity: 0.2});
+                var material = new THREE.MeshBasicMaterial({transparent: true});
                 var circle = new THREE.Mesh(geometry, material);
+                circle.material.color.setRGB(rgba[0], rgba[1], rgba[2]);
+                circle.material.opacity = rgba[3];
 
                 // Retrieve the x and y coordinate and set circle position
                 circle.position.x = values[id].x;
