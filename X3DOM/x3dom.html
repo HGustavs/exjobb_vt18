@@ -1,25 +1,16 @@
 <html> 
     <head> 
-        <title>Heatmap - X3DOM</title> 			
+        <title>Heatmap - X3DOM</title> 		
+
         <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'></script>
-        <!-- <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js'></script> -->
-        <script src="../proj4-src.js"></script>
+		<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.3/proj4-src.js'></script>
         <script type='text/javascript' src='x3dom.js'></script> 
         <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'></link> 
     </head> 
-    <body onload='setCoordinate()'> 
-        <x3d id='x3d' width='600px' height='400px'> 
-            <scene> 
-                <OrthoViewpoint DEF='v1' orientation='0 0 0 1' position='0 0 2' fieldOfView='0 0 0 100'></OrthoViewpoint>
-                <shape> 
-                    <appearance>
-                        <material DEF='materialID'></material>
-                    </appearance>
-                    <!-- Defines where to render the heatmap -->
-                    <indexedFaceSet id='indexdFaceSetID' solid='false' coordIndex='0 1 2 -1 3 4 5 -1 '>
-                        <coordinate id='coordinateID' point='0 0 0, 2 0 0, 1 2 0, 3 0 0, 5 0 0, 4 2 0'/>
-                    </indexFaceSet>
-                </shape> 
+    <body> 
+        <x3d id='x3d' width='600px' height='600px'> 
+            <scene id='scene'> 
+                <OrthoViewpoint DEF='v1' orientation='0 0 0 1' position='0 0 2' fieldOfView='0 0 0 600'></OrthoViewpoint>
             </scene> 
         </x3d>
     </body> 
