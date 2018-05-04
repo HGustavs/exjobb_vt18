@@ -1,50 +1,9 @@
 'use strict';
 
-// function setCoordinate(){ // Change the coordinates in the scene
-//     var oldCoordinate = document.getElementById('coordinateID').getAttribute('point');
-//     console.log('The old value was ' + oldCoordinate);    
-//     //var setNewCoordinate = document.getElementById('coordinateID').setAttribute('point', '0 0 0, 2 0 0, 1 1 0');
-    
-//     var newCoordinate = document.getElementById('coordinateID').getAttribute('point');
-//     console.log('The new value is ' + newCoordinate);
-// };
-
-// function setCoordinate() {
-//     var x = Math.random() * 80 - 40;
-//     var y = Math.random() * 80 - 40;
-//     var z = 0;
-
-//     var transform = document.createElement('Transform');
-//     transform.setAttribute("translation", x + " " + y + " " + z );
-
-//     var shape = document.createElement('shape');
-    
-//     var app = document.createElement('Appearance');
-//     var mat = document.createElement('Material');
-//     mat.setAttribute('diffuseColor', '1 0 1');
-//     app.appendChild(mat);
-//     shape.appendChild(app);
-
-//     transform.appendChild(shape);
-
-//     var node = document.createElement('indexedFaceSet');
-//     node.setAttribute('coordIndex', '0 1 2 3 -1');
-
-//     var coord = document.createElement('coordinate');
-//     coord.setAttribute('point', '0 0 0, 2 0 0, 2 2 0, 0 2 0');
-
-//     node.appendChild(coord);
-//     shape.appendChild(node);
-
-//     var scene = document.getElementById('scene');
-//     scene.append(transform);
-// }
-
 // Variables for timing the rendering
 var start;
 var stop;
 var result; // The difference between start and stop
-
 
 // Timer. Calculate the rendering time
 function timer(time) {
