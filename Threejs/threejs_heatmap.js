@@ -25,7 +25,7 @@ function timer(time) {
         stop = Date.now();
         result = stop - start;
         
-        // Save rendering time
+        // Save rendering time to localStorage
         var renderedTimes = [];
         var getTimes;
         if(Array.isArray(JSON.parse(localStorage.getItem("time")))) {
@@ -60,7 +60,7 @@ xmlhttp.onreadystatechange = function() {
         var dest = new proj4('EPSG:3785');
 
         function prepareCoordinates() {
-            for(dotQuantity; dotQuantity < 50000; dotQuantity++){ 
+            for(dotQuantity; dotQuantity < 30000; dotQuantity++){ 
                 var coords = newCoordinate();
                 var point = convertLatlon(coords.lat, coords.lon);
                 point.value = coords.value;
@@ -129,9 +129,6 @@ xmlhttp.onreadystatechange = function() {
                 }
             }
             createDot();
-
-            console.log(dotCoord);
-            console.log('NumberOfDotCoords: ' + Object.keys(dotCoord).length);
         };
 
         var dotGeometry = new THREE.Geometry();
@@ -151,7 +148,6 @@ xmlhttp.onreadystatechange = function() {
                 var dotMaterial = new THREE.PointsMaterial({size: 4, sizeAttenuation: false, transparent: true});
                 var dot = new THREE.Points(dotGeometry, dotMaterial);
                 dot.material.color.setRGB(rgba[0], rgba[1], rgba[2]);
-                // dot.material.opacity = rgba[3]; // Sets the opacity
                 
                 dot.position.x = dotCoord[id].x;
                 dot.position.y = dotCoord[id].y;
@@ -186,27 +182,26 @@ xmlhttp.onreadystatechange = function() {
         function animate() {
             prepareCoordinates();
             dotSystem();
-
-            console.log(coordinates);
             console.log('NumberOfCoords: ' + Object.keys(coordinates).length);
-
-            timer(start); // Start animation render timer
-            renderer.render(scene, camera); // Render the scene with all the circles that been added
-            timer(stop); // Stop and calculate the animation render time
+            renderer.render(scene, camera); // Render the scene            
         };
 
-        console.log('DataLength: ' + jsonData.length)
-        
         // Runs the script again to collect a certain amount of data
         if(localStorage.getItem("time") != null){
-            if(JSON.parse(localStorage.getItem("time")).length < 10) {
+            if(JSON.parse(localStorage.getItem("time")).length < 5000) {
+                timer(start); // Start animation render timer
                 animate();
+                timer(stop); // Stop and calculate the animation render time
                 location.reload();
             } else {
                 console.log(JSON.parse(localStorage.getItem("time")));
+                var getResults = JSON.parse(localStorage.getItem("time"));
+                document.getElementById("results").innerHTML = getResults;
             }
         } else {
+            timer(start); // Start animation render timer
             animate();
+            timer(stop); // Stop and calculate the animation render time
             location.reload();
         }
         

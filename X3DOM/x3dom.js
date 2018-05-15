@@ -48,7 +48,7 @@ xmlhttp.onreadystatechange = function() {
         var dest = new proj4('EPSG:3785');
 
         function prepareCoordinates() {
-            for(dotQuantity; dotQuantity < 50000; dotQuantity++){ 
+            for(dotQuantity; dotQuantity < 30000; dotQuantity++){
                 var coords = newCoordinate();
                 var point = convertLatlon(coords.lat, coords.lon);
                 point.value = coords.value;
@@ -116,9 +116,6 @@ xmlhttp.onreadystatechange = function() {
                 }
             }
             createDot();
-
-            console.log(dotCoord);
-            console.log('NumberOfDotCoords: ' + Object.keys(dotCoord).length);
         };
 
         function createDot(){
@@ -156,7 +153,7 @@ xmlhttp.onreadystatechange = function() {
             node.setAttribute('coordIndex', '0 1 2 3 -1');
 
             var coord = document.createElement('coordinate');
-            coord.setAttribute('point', '0 0 0, 2 0 0, 2 2 0, 0 2 0');
+            coord.setAttribute('point', '0 0 0, 4 0 0, 4 4 0, 0 4 0');
 
             node.appendChild(coord);
             shape.appendChild(node);
@@ -187,35 +184,31 @@ xmlhttp.onreadystatechange = function() {
             b = hue2rgb(p, q, h - 1 / 3);
             // return RGBA
             return [r, g, b, value];
-        }
-
+        };
+        
         function animate() {
             prepareCoordinates();
             dotSystem();
-
-            console.log(coordinates);
-            console.log('NumberOfCoords: ' + Object.keys(coordinates).length);
-
-            timer(start); // Start animation render timer
-            // Render the scene
-            timer(stop); // Stop and calculate the animation render time
         };
-
-        console.log('DataLength: ' + jsonData.length)
 
         // Runs the script again to collect a certain amount of data
         if(localStorage.getItem("time") != null){
-            if(JSON.parse(localStorage.getItem("time")).length < 10) {
+            if(JSON.parse(localStorage.getItem("time")).length < 5000) {
+                timer(start); // Start animation render timer
                 animate();
+                timer(stop); // Stop and calculate the animation render time
                 location.reload();
             } else {
                 console.log(JSON.parse(localStorage.getItem("time")));
+                var getResults = JSON.parse(localStorage.getItem("time"));
+                document.getElementById("results").innerHTML = getResults;
             }
         } else {
+            timer(start); // Start animation render timer
             animate();
+            timer(stop); // Stop and calculate the animation render time
             location.reload();
         }
-        
     };
 };
 xmlhttp.open("GET", "../Dataset/icesData.json", true);

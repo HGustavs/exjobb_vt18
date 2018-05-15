@@ -6,12 +6,17 @@
 		<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.3/proj4-src.js'></script>
         <script type='text/javascript' src='x3dom.js'></script> 
         <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'></link> 
+        <style>
+            img {width: 600px; height: 427px; position: absolute;  z-index: -1; margin-left: 0px; margin-top: 60px;}
+        </style>
     </head> 
     <body> 
+        <img src="../backgroundMap.png" alt="Map of the north sea">
         <x3d id='x3d' width='600px' height='600px'> 
             <scene id='scene'> 
                 <OrthoViewpoint DEF='v1' orientation='0 0 0 1' position='0 0 2' fieldOfView='0 0 0 600'></OrthoViewpoint>
             </scene> 
         </x3d>
+        <p id='results'></p>
     </body> 
 </html>
