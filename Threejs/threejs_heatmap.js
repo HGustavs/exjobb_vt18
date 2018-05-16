@@ -39,7 +39,7 @@ function timer(time) {
     } else {
         console.log("Timer was not set correctly");
     }
-};
+}
 
 // Get the data from the json file
 var xmlhttp = new XMLHttpRequest();
@@ -66,7 +66,7 @@ xmlhttp.onreadystatechange = function() {
                 point.value = coords.value;
                 addID(point);
             }
-        };
+        }
 
         function newCoordinate(){
             // Replace any commas with a dot to be able to render the coordinate
@@ -78,7 +78,7 @@ xmlhttp.onreadystatechange = function() {
                     measurementValue = Number(jsonData[dotQuantity]["PSAL [psu]"]);
                 }
                 return {lat: lat, lon: lon, value: measurementValue};  
-        };
+        }
         
         // Returns a point with x and y coordinates in meters
         function convertLatlon(lat, lon) {
@@ -105,7 +105,7 @@ xmlhttp.onreadystatechange = function() {
                 // Create new coordinate
                 coordinates[id] = {value : value, x : movedX, y : movedY};
             }
-        };
+        }
 
         function dotSystem(){
             var canWidth = 300;
@@ -129,7 +129,7 @@ xmlhttp.onreadystatechange = function() {
                 }
             }
             createDot();
-        };
+        }
 
         var dotGeometry = new THREE.Geometry();
         dotGeometry.vertices.push(new THREE.Vector3( 0, 0, 0));
@@ -184,7 +184,7 @@ xmlhttp.onreadystatechange = function() {
             dotSystem();
             console.log('NumberOfCoords: ' + Object.keys(coordinates).length);
             renderer.render(scene, camera); // Render the scene            
-        };
+        }
 
         // Runs the script again to collect a certain amount of data
         if(localStorage.getItem("time") != null){
@@ -204,8 +204,7 @@ xmlhttp.onreadystatechange = function() {
             timer(stop); // Stop and calculate the animation render time
             location.reload();
         }
-        
-    };
+    }
 };
 xmlhttp.open("GET", "../Dataset/icesData.json", true);
 xmlhttp.send();
